@@ -1,10 +1,13 @@
 package models
 
-import "github.com/jinzhu/gorm"
-
+import (
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/jinzhu/gorm"
+)
 type ServicesConfig func(s *Service) error
 
 type Service struct {
+	User UserService
 	db   *gorm.DB
 }
 
@@ -30,6 +33,18 @@ func WithGorm(dialect string, connectionInfo string) ServicesConfig{
 		return nil
 	}
 }
+
+func WithUser() ServicesConfig {
+	return func(s *Service) error {
+		s.User = NewUserService(s.db)
+		return nil
+	}
+}
+
+func (s *Service) Migrate() error{
+	return 	s.db.AutoMigrate(&User{}).Error
+}
+
 
 
 func (s *Service) Close() error {

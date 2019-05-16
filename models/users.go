@@ -19,3 +19,8 @@ type User struct {
 	Email    string `gorm:"not null;unique_index" json:"email"`
 	Password string `json:"password"`
 }
+
+
+func NewUserService(db *gorm.DB) *userService {
+	return &userService{db: db}
+}
