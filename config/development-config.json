@@ -1,0 +1,9 @@
+{
+  "host": "localhost",
+  "port": 5432,
+  "user": "postgres",
+  "dbname": "gorm",
+  "password": "postgres123",
+  "dialect": "postgres",
+  "jwt_secret_key": "my_secret_key"
+}
