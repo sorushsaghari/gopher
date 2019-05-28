@@ -1,10 +1,11 @@
-package models
+package services
 
 import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/jinzhu/gorm"
+	"../models"
 )
-type ServicesConfig func(s *Service) error
+type ServeConfig func(s *Service) error
 
 type Service struct {
 	User UserService
@@ -12,7 +13,7 @@ type Service struct {
 }
 
 
-func NewService(cfgs ...ServicesConfig) (*Service, error) {
+func NewService(cfgs ...ServeConfig) (*Service, error) {
 	var s Service
 	for _, cfg := range cfgs {
 		if err := cfg(&s); err != nil {
@@ -23,7 +24,7 @@ func NewService(cfgs ...ServicesConfig) (*Service, error) {
 }
 
 
-func WithGorm(dialect string, connectionInfo string) ServicesConfig{
+func WithGorm(dialect string, connectionInfo string) ServeConfig {
 	return func(s *Service) error {
 		db, err := gorm.Open(dialect, connectionInfo)
 		if err != nil {
@@ -34,7 +35,7 @@ func WithGorm(dialect string, connectionInfo string) ServicesConfig{
 	}
 }
 
-func WithUser() ServicesConfig {
+func WithUser() ServeConfig {
 	return func(s *Service) error {
 		s.User = NewUserService(s.db)
 		return nil
@@ -42,7 +43,7 @@ func WithUser() ServicesConfig {
 }
 
 func (s *Service) Migrate() error{
-	return 	s.db.AutoMigrate(&User{}).Error
+	return 	s.db.AutoMigrate(&models.User{}).Error
 }
 
 

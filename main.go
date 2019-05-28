@@ -5,24 +5,24 @@ import (
 	"net/http"
 	"time"
 	"github.com/tkanos/gonfig"
-	"./models"
 	"./config"
 	"./middleware"
 	"./controllers"
+	"./services"
 )
 
 func main()  {
 	configuration := config.Config{}
 	err := gonfig.GetConf("./config/development-config.json", &configuration)
-	services, err := models.NewService(
-		models.WithGorm(configuration.Dialect, configuration.GetConnectionInfo()),
-		models.WithUser(),
+	service, err := services.NewService(
+		services.WithGorm(configuration.Dialect, configuration.GetConnectionInfo()),
+		services.WithUser(),
 	)
-	uc := controllers.NewUserController(services.User)
+	uc := controllers.NewUserController(service.User)
 	if err != nil {
 		panic(err)
 	}
-	defer services.Close()
+	defer service.Close()
 	r := gin.Default()
 	r.POST("/auth", uc.SignIn)
 	r.POST("/", uc.Create)

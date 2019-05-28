@@ -6,13 +6,14 @@ import (
 	"time"
 	"github.com/dgrijalva/jwt-go"
 	"../config"
+	"../services"
 )
 
 type UserController struct {
-	us models.UserService
+	us services.UserService
 }
 
-func NewUserController(us models.UserService) *UserController{
+func NewUserController(us services.UserService) *UserController{
 	return  &UserController{
 		us: us,
 	}
