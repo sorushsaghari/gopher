@@ -3,6 +3,7 @@ package services
 import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/jinzhu/gorm"
+	"../models"
 )
 type ServeConfig func(s *Service) error
 
@@ -42,7 +43,7 @@ func WithUser() ServeConfig {
 }
 
 func (s *Service) Migrate() error{
-	return 	s.db.AutoMigrate(&User{}).Error
+	return 	s.db.AutoMigrate(&models.User{}).Error
 }
 
 

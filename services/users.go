@@ -11,9 +11,9 @@ import (
 
 type UserDb interface {
 	FindById(id uint) (*models.User, error)
-	Insert(user *User) error
-	FindByEmail(email string) (*User, error)
-	Find(field, value string) (*User, error)
+	Insert(user *models.User) error
+	FindByEmail(email string) (*models.User, error)
+	Find(field, value string) (*models.User, error)
 }
 
 type UserService interface {
@@ -29,7 +29,7 @@ func NewUserService(db *gorm.DB) *userService {
 	return &userService{db: db}
 }
 
-func (us *userService) Insert(user *User) error {
+func (us *userService) Insert(user *models.User) error {
 	password, err := hashPassword(user.Password)
 	if err != nil {
 		return err
@@ -38,35 +38,35 @@ func (us *userService) Insert(user *User) error {
 	return us.db.Create(user).Error
 }
 
-func (us *userService) Find(field, value string) (*User, error) {
-	var user User
+func (us *userService) Find(field, value string) (*models.User, error) {
+	var user models.User
 	err := us.db.Where(fmt.Sprintf("%s = ?", field), value).Find(&user).Error
 	fmt.Println(user)
 	switch err {
 	case nil:
 		return &user, nil
 	case gorm.ErrRecordNotFound:
-		return nil, ErrNotFound
+		return nil, models.ErrNotFound
 	default:
 		return nil, err
 	}
 }
 
-func (us *userService) FindById(id uint) (*User, error) {
-	var user User
+func (us *userService) FindById(id uint) (*models.User, error) {
+	var user models.User
 	err := us.db.Where("id = $1", id).First(&user).Error
 	switch err {
 	case nil:
 		return &user, nil
 	case gorm.ErrRecordNotFound:
-		return nil, ErrNotFound
+		return nil, models.ErrNotFound
 	default:
 		return nil, err
 	}
 }
 
-func (us *userService) FindByEmail(email string) (*User, error) {
-	var user User
+func (us *userService) FindByEmail(email string) (*models.User, error) {
+	var user models.User
 	fmt.Println(email)
 	err := us.db.Where("email = ?", email).Find(&user).Error
 	fmt.Println(user)
@@ -74,7 +74,7 @@ func (us *userService) FindByEmail(email string) (*User, error) {
 	case nil:
 		return &user, nil
 	case gorm.ErrRecordNotFound:
-		return nil, ErrNotFound
+		return nil, models.ErrNotFound
 	default:
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (us *userService) Authenticate(email string, password string) (bool, error)
 		return checkPasswordHash(password, u.Password), nil
 	case gorm.ErrRecordNotFound:
 		fmt.Println("sik")
-		return false, ErrNotFound
+		return false, models.ErrNotFound
 	default:
 		fmt.Println("pashm")
 		return false, err
