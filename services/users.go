@@ -5,13 +5,19 @@ import (
 	"github.com/jinzhu/gorm"
 	"fmt"
 	"../models"
+	"github.com/asaskevich/govalidator"
 )
 
+type UserDto struct {
+	Name     string `json:"name" valid:"-"`
+	Email    string `json:"email" valid:"email"`
+	Password string `json:"password" valid:"-"`
+}
 
 
 type UserDb interface {
 	FindById(id uint) (*models.User, error)
-	Insert(user *models.User) error
+	Insert(user *UserDto) error
 	FindByEmail(email string) (*models.User, error)
 	Find(field, value string) (*models.User, error)
 }
@@ -19,6 +25,7 @@ type UserDb interface {
 type UserService interface {
 	UserDb
 	Authenticate(password, email string) (bool, error)
+	Validate(dto UserDto) (bool, error)
 }
 type userService struct {
 	db *gorm.DB
@@ -29,13 +36,17 @@ func NewUserService(db *gorm.DB) *userService {
 	return &userService{db: db}
 }
 
-func (us *userService) Insert(user *models.User) error {
-	password, err := hashPassword(user.Password)
+func (us *userService) Insert(obj *UserDto) error {
+	user := models.User{
+		Name: obj.Name,
+		Email: obj.Email,
+	}
+	password, err := hashPassword(obj.Password)
 	if err != nil {
 		return err
 	}
 	user.Password = password
-	return us.db.Create(user).Error
+	return us.db.Create(&user).Error
 }
 
 func (us *userService) Find(field, value string) (*models.User, error) {
@@ -93,6 +104,10 @@ func (us *userService) Authenticate(email string, password string) (bool, error)
 		fmt.Println("pashm")
 		return false, err
 	}
+}
+
+func (us *userService) Validate(dto UserDto) (bool, error) {
+	return govalidator.ValidateStruct(dto)
 }
 
 func hashPassword(password string) (string, error) {
