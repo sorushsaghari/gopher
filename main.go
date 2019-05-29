@@ -24,10 +24,11 @@ func main()  {
 	}
 	defer service.Close()
 	r := gin.Default()
+	private := r.Group("users")
 	r.POST("/auth", uc.SignIn)
-	r.POST("/", uc.Create)
-	r.Use(middleware.IsAuthenticated())
-	r.GET("/me", uc.Me)
+	r.POST("/users", uc.Create)
+	private.Use(middleware.IsAuthenticated())
+	private.GET("/me", uc.Me)
 	s := &http.Server{
 		Addr:           ":3000",
 		Handler:        r,
