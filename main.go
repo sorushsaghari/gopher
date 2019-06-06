@@ -12,6 +12,7 @@ import (
 )
 
 func main()  {
+
 	configuration := config.Config{}
 	err := gonfig.GetConf("./config/development-config.json", &configuration)
 	service, err := services.NewService(
@@ -27,6 +28,7 @@ func main()  {
 	private := r.Group("users")
 	r.POST("/auth", uc.SignIn)
 	r.POST("/users", uc.Create)
+	r.GET("/users", uc.All)
 	private.Use(middleware.IsAuthenticated())
 	private.GET("/me", uc.Me)
 	s := &http.Server{

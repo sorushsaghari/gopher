@@ -20,6 +20,7 @@ type UserDb interface {
 	Insert(user *UserDto) error
 	FindByEmail(email string) (*models.User, error)
 	Find(field, value string) (*models.User, error)
+	All() (*[] models.User, error)
 }
 
 type UserService interface {
@@ -104,6 +105,12 @@ func (us *userService) Authenticate(email string, password string) (bool, error)
 		fmt.Println("pashm")
 		return false, err
 	}
+}
+
+func (us *userService) All() (*[] models.User, error)  {
+	var users [] models.User
+	err := us.db.Find(&users).Error
+	return &users, err
 }
 
 func (us *userService) Validate(dto UserDto) (bool, error) {
