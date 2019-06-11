@@ -9,6 +9,7 @@ type ServeConfig func(s *Service) error
 
 type Service struct {
 	User UserService
+	Chat MessageService
 	db   *gorm.DB
 }
 
@@ -38,6 +39,13 @@ func WithGorm(dialect string, connectionInfo string) ServeConfig {
 func WithUser() ServeConfig {
 	return func(s *Service) error {
 		s.User = NewUserService(s.db)
+		return nil
+	}
+}
+
+func WithChat() ServeConfig {
+	return func(s *Service) error {
+		s.Chat = NewMessageService(s.db)
 		return nil
 	}
 }
