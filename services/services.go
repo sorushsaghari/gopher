@@ -1,9 +1,9 @@
 package services
 
 import (
-	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/jinzhu/gorm"
 	"../models"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 type ServeConfig func(s *Service) error
 

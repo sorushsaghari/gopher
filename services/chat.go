@@ -3,8 +3,9 @@ package services
 import "github.com/jinzhu/gorm"
 
 type MessageDto struct {
-	User UserDto `json:"user"`
-	Text string  `json:"text"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Message  string `json:"message"`
 }
 
 type MessageDB interface {
