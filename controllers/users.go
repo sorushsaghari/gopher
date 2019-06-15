@@ -92,3 +92,14 @@ func (uc* UserController) Create(c* gin.Context) {
 	}
 	c.JSON(200, gin.H{"message": "user created successfully"})
 }
+
+func (uc* UserController) All(c* gin.Context) {
+	users, err := uc.us.All()
+	if err != nil{
+		c.JSON(http.StatusBadRequest, models.ErrBadRequest)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"users": users})
+}
+
