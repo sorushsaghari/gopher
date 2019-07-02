@@ -16,6 +16,7 @@ type UserController struct {
 }
 
 func NewUserController(us services.UserService) *UserController{
+
 	return  &UserController{
 		us: us,
 	}
@@ -24,7 +25,7 @@ func NewUserController(us services.UserService) *UserController{
 func (uc* UserController) SignIn(c* gin.Context)  {
 
 	var cred config.Credentials
-	c.ShouldBindJSON(&cred)
+	_ = c.ShouldBindJSON(&cred)
 	authenticated, err:= uc.us.Authenticate(cred.Email, cred.Password)
 	if err != nil {
 		c.JSON(404, map[string]string{"error": err.Error()})

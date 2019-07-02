@@ -29,12 +29,13 @@ type UserService interface {
 	Validate(dto UserDto) (bool, error)
 }
 type userService struct {
-	db *gorm.DB
+	service
 	UserService
 }
 
 func NewUserService(db *gorm.DB) *userService {
-	return &userService{db: db}
+	service := service{db: db}
+	return &userService{service: service}
 }
 
 func (us *userService) Insert(obj *UserDto) error {

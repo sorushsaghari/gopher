@@ -8,11 +8,15 @@ import (
 type ServeConfig func(s *Service) error
 
 type Service struct {
+	service
 	User UserService
+	Nurse NurseService
 	Chat MessageService
-	db   *gorm.DB
 }
 
+type service struct {
+	db *gorm.DB
+}
 
 func NewService(cfgs ...ServeConfig) (*Service, error) {
 	var s Service

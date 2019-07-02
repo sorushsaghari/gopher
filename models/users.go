@@ -10,6 +10,20 @@ type User struct {
 	Name     string `json:"name"`
 	Email    string `gorm:"not null;unique_index" json:"email"`
 	Password string `json:"password"`
+	OwnerID   int
+	OwnerType string
 }
 
+func (u User) IsNurse() bool {
+	if u.OwnerType == "Nurse"{
+		return true
+	}
+	return false
+}
 
+func (u User) IsCustomer() bool {
+	if u.OwnerType == "Customer"{
+		return true
+	}
+	return false
+}
