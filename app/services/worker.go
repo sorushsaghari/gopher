@@ -22,15 +22,18 @@ type NurseService interface {
 }
 
 type nurseService struct {
-	service
-	NurseService
+	Service
+}
+
+func NewNurseService(db *gorm.DB) *nurseService {
+	service := Service{DB: db}
+	return &nurseService{ Service: service}
 }
 
 func (n nurseService) NewNurseService(db *gorm.DB) *nurseService {
-	service := service{db}
-	return &nurseService{service: service}
+	service := Service{db}
+	return &nurseService{ service}
 }
 
 func (n nurseService) Insert(object NurseDto) error {
-	err := userService.Insert(object.UserDto)
 }

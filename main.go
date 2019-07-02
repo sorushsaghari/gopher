@@ -1,27 +1,29 @@
 package main
 
 import (
+	"./app"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
 	"github.com/tkanos/gonfig"
 	"./config"
-	"./middleware"
-	"./controllers"
-	"./services"
+	"./app/middleware"
+	"./app/controllers"
+	"./app/services"
 )
 
 func main()  {
 
 	configuration := config.Config{}
 	err := gonfig.GetConf("./config/development-config.json", &configuration)
-	service, err := services.NewService(
-		services.WithGorm(configuration.Dialect, configuration.GetConnectionInfo()),
-		services.WithUser(),
-		services.WithChat(),
+	service, err := services.WithGorm(configuration.Dialect, configuration.GetConnectionInfo())
+
+		app, err := app.NewApp(
+		app.WithUser(*service),
+		app.WithChat(*service),
 	)
-	uc := controllers.NewUserController(service.User)
-	cc := controllers.NewChatController(service.Chat)
+	uc := controllers.NewUserController(app)
+	cc := controllers.NewChatController(app)
 	if err != nil {
 		panic(err)
 	}

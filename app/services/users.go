@@ -29,13 +29,13 @@ type UserService interface {
 	Validate(dto UserDto) (bool, error)
 }
 type userService struct {
-	service
+	Service
 	UserService
 }
 
 func NewUserService(db *gorm.DB) *userService {
-	service := service{db: db}
-	return &userService{service: service}
+	service := Service{DB: db}
+	return &userService{ Service: service}
 }
 
 func (us *userService) Insert(obj *UserDto) error {
@@ -48,12 +48,12 @@ func (us *userService) Insert(obj *UserDto) error {
 		return err
 	}
 	user.Password = password
-	return us.db.Create(&user).Error
+	return us.DB.Create(&user).Error
 }
 
 func (us *userService) Find(field, value string) (*models.User, error) {
 	var user models.User
-	err := us.db.Where(fmt.Sprintf("%s = ?", field), value).Find(&user).Error
+	err := us.DB.Where(fmt.Sprintf("%s = ?", field), value).Find(&user).Error
 	fmt.Println(user)
 	switch err {
 	case nil:
@@ -67,7 +67,7 @@ func (us *userService) Find(field, value string) (*models.User, error) {
 
 func (us *userService) FindById(id uint) (*models.User, error) {
 	var user models.User
-	err := us.db.Where("id = $1", id).First(&user).Error
+	err := us.DB.Where("id = $1", id).First(&user).Error
 	switch err {
 	case nil:
 		return &user, nil
@@ -81,7 +81,7 @@ func (us *userService) FindById(id uint) (*models.User, error) {
 func (us *userService) FindByEmail(email string) (*models.User, error) {
 	var user models.User
 	fmt.Println(email)
-	err := us.db.Where("email = ?", email).Find(&user).Error
+	err := us.DB.Where("email = ?", email).Find(&user).Error
 	fmt.Println(user)
 	switch err {
 	case nil:
@@ -110,7 +110,7 @@ func (us *userService) Authenticate(email string, password string) (bool, error)
 
 func (us *userService) All() (*[] models.User, error)  {
 	var users [] models.User
-	err := us.db.Find(&users).Error
+	err := us.DB.Find(&users).Error
 	return &users, err
 }
 

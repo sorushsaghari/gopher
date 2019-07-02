@@ -1,24 +1,25 @@
 package controllers
 
 import (
+	"../../app"
+	"../../config"
 	"../models"
-	"github.com/gin-gonic/gin"
-	"time"
-	"github.com/dgrijalva/jwt-go"
-	"../config"
 	"../services"
-	"net/http"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+	"net/http"
+	"time"
 )
 
 type UserController struct {
-	us services.UserService
+	*app.App
 }
 
-func NewUserController(us services.UserService) *UserController{
+func NewUserController(app *app.App) *UserController{
 
 	return  &UserController{
-		us: us,
+		App: app,
 	}
 }
 
@@ -26,7 +27,8 @@ func (uc* UserController) SignIn(c* gin.Context)  {
 
 	var cred config.Credentials
 	_ = c.ShouldBindJSON(&cred)
-	authenticated, err:= uc.us.Authenticate(cred.Email, cred.Password)
+	authenticated, err:= uc.User.Authenticate(cred.Email, cred.Password)
+	uc.User.Find()
 	if err != nil {
 		c.JSON(404, map[string]string{"error": err.Error()})
 		return
@@ -62,7 +64,7 @@ func (uc* UserController) Me(c* gin.Context)  {
 		c.JSON(404, err)
 		return
 	}
-	me, err := uc.us.FindByEmail(claim.Email)
+	me, err := uc.User.FindByEmail(claim.Email)
 	if err != nil {
 		c.JSON(404, err)
 		return
@@ -75,7 +77,7 @@ func (uc* UserController) Me(c* gin.Context)  {
 func (uc* UserController) Create(c* gin.Context) {
 	var json services.UserDto
 	c.ShouldBindJSON(&json)
-	result, err := uc.us.Validate(json)
+	result, err := uc.App.User.Validate(json)
 	if err != nil {
 		fmt.Println(err)
 		 c.JSON(http.StatusBadRequest, gin.H{"err":err.Error()})
@@ -85,7 +87,7 @@ func (uc* UserController) Create(c* gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrBadRequest)
 		return
 	}
-	err = uc.us.Insert(&json)
+	err = uc.User.Insert(&json)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"err":err.Error()})
@@ -95,7 +97,7 @@ func (uc* UserController) Create(c* gin.Context) {
 }
 
 func (uc* UserController) All(c* gin.Context) {
-	users, err := uc.us.All()
+	users, err := uc.User.All()
 	if err != nil{
 		c.JSON(http.StatusBadRequest, models.ErrBadRequest)
 		return
