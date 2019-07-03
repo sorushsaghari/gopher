@@ -36,4 +36,5 @@ func (n nurseService) NewNurseService(db *gorm.DB) *nurseService {
 }
 
 func (n nurseService) Insert(object NurseDto) error {
+
 }
